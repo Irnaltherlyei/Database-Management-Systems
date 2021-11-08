@@ -1,0 +1,7 @@
+1. download ojdbc https://www.oracle.com/de/database/technologies/appdev/jdbc-downloads.html
+2. put the jar into the project workspaces
+
+3. go to file > project structre
+   click add and choose the ojdbc.jar in the project workspace
+
+4. apply > ok
