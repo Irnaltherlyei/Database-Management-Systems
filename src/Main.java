@@ -1,6 +1,4 @@
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.*;
 
 public class Main {
@@ -13,7 +11,7 @@ public class Main {
     }
 
     public static String sql(String query){
-        String s = query + "\n";
+        StringBuilder s = new StringBuilder(query + "\n");
         // Open connection
         try(Connection conn = DriverManager.getConnection(DB_URL, USER, PW);
             Statement stmt = conn.createStatement();
@@ -25,25 +23,19 @@ public class Main {
                 int columnCount =  rsmd.getColumnCount();
                 for(int i = 1; i < columnCount + 1; i++){
                     int type = rsmd.getColumnType(i);
-                    switch(type) {
-                        case Types.VARCHAR:
-                        case Types.CHAR:
-                            s = s + " " + rs.getString(i);
-                            break;
-                        case Types.NUMERIC:
-                            s = s + " " + rs.getInt(i);
-                            break;
-                        default:
-                            s = s + " " + "Type:" + Types.NUMERIC;
-                    }
+                    s = new StringBuilder(switch (type) {
+                        case Types.VARCHAR, Types.CHAR -> s + " " + rs.getString(i);
+                        case Types.NUMERIC -> s + " " + rs.getInt(i);
+                        default -> s + " " + "Type:" + Types.NUMERIC;
+                    });
 
                 }
-                s = s + "\n";
+                s.append("\n");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return s;
+        return s.toString();
     }
 
     public static void init() {
@@ -61,12 +53,7 @@ public class Main {
         JTextArea output = new JTextArea();
         output.setEditable(false);
 
-        commit.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                output.setText(sql(input.getText()));
-            }
-        });
+        commit.addActionListener(e -> output.setText(sql(input.getText())));
 
         mainPanel.add(label);
         mainPanel.add(input);
@@ -75,7 +62,7 @@ public class Main {
 
         mainFrame.add(mainPanel);
 
-        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         mainFrame.setSize(720, 480);
         mainFrame.setVisible(true);
     }
