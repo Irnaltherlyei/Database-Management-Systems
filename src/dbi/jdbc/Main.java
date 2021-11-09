@@ -1,3 +1,5 @@
+package dbi.jdbc;
+
 import javax.swing.*;
 import java.sql.*;
 
